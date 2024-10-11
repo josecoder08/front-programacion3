@@ -10,7 +10,7 @@ function Table({ data }) {
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/api/client/${id}`, {
+      const response = await fetch(`https://programacion3.vercel.app/api/client/${id}`, {
         method: 'DELETE',
       });
 

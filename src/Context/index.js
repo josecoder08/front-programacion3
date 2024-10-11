@@ -6,7 +6,7 @@ export const ClientProvider = ({ children }) => {
   const [clients, setClients] = useState([]); // Estado global para los clientes
 
   useEffect(() => {
-        fetch('http://localhost:3001/api/client')
+        fetch('https://programacion3.vercel.app/api/client')
           .then(response => response.json())
           .then(data => {
             console.log(data); // Check what data is returned

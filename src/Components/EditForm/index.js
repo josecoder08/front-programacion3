@@ -48,7 +48,7 @@ const EditForm = () => {
     const userId = cliente.user._id;
 
     try {
-      const clientResponse = await fetch(`http://localhost:3001/api/client/${id}`, {
+      const clientResponse = await fetch(`https://programacion3.vercel.app/api/client/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -62,7 +62,7 @@ const EditForm = () => {
         throw new Error('Error al actualizar los datos del cliente');
       }
 
-      const userResponse = await fetch(`http://localhost:3001/api/user/${userId}`, {
+      const userResponse = await fetch(`https://programacion3.vercel.app/api/user/${userId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

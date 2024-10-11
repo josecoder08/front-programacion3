@@ -31,7 +31,7 @@ const CreateForm = () => {
 
     try {
       // First, create the user
-      const userResponse = await fetch('http://localhost:3001/api/user', {
+      const userResponse = await fetch('https://programacion3.vercel.app/api/user', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ const CreateForm = () => {
       const newUser = await userResponse.json();
 
       // Then, create the client using the new user's ID
-      const clientResponse = await fetch('http://localhost:3001/api/client', {
+      const clientResponse = await fetch('https://programacion3.vercel.app/api/client', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
