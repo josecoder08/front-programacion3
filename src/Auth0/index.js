@@ -23,7 +23,9 @@ function Auth0() {
           !isAuthenticated ? (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
   <h1 className="text-2xl font-bold mb-4 text-center">Bienvenidos al Registro de Clientes !!! inicie sesión para Comenzar...</h1>
-  <button className={`${Style.BotonLogin} p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700`} onClick={() => loginWithRedirect()}>
+  <button className={`${Style.BotonLogin} p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700`} onClick={() => loginWithRedirect({
+  redirect_uri: 'https://front-programacion3.vercel.app/callback'
+})}>
     Login
   </button>
 </div>
