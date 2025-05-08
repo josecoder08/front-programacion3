@@ -1,6 +1,7 @@
 import Layout from "../../Components/Layout"
 import CreateForm from "../../Components/CreateForm"
 
+
 function Crear() {
   
 

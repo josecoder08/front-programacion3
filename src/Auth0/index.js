@@ -1,41 +1,44 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import Style from "./App.module.css";
-function Auth0() {
 
-  const { user, logout, loginWithRedirect, isAuthenticated, isLoading }= useAuth0();
+function Auth0() {
+  const { user, logout, loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
 
   if (isLoading) {
-    return <div>Cargando...</div>; // O cualquier componente de carga que prefieras
-}
-  return (
-    <>
-     <div className={Style.Container} >
-      {
-        (isAuthenticated && (
-          <div className="flex items-center space-x-4">
-            <p className="mb-10">{user.email}</p>
-          <img src={user.picture} alt="usuario" className="w-10 h-10 rounded-full" />
-        </div>) )
-      }
-      </div> 
-      <div>
-        {
-          !isAuthenticated ? (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-  <h1 className="text-2xl font-bold mb-4 text-center">Bienvenidos al Registro de Clientes !!! inicie sesión para Comenzar...</h1>
-  <button className={`${Style.BotonLogin} p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700`} onClick={() => loginWithRedirect({
-  redirect_uri: 'https://front-programacion3.vercel.app/callback'
-})}>
-    Login
-  </button>
-</div>
+    return <div>Cargando...</div>; // Loader opcional
+  }
 
-          
-        )
-           : (<button className={`${Style.BotonLogin} p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700`}  onClick={()=>logout()}>Logout</button>)
-        }
-    </div> 
-    </>
+  return (
+    <div className="flex items-center gap-3">
+      {/* Si está autenticado, mostrar avatar y email */}
+      {isAuthenticated && (
+        <>
+          <img src={user.picture} alt="usuario" className="w-8 h-8 rounded-full" />
+          <p className="text-sm text-gray-800">{user.email}</p>
+        </>
+      )}
+
+      {/* Botón Login/Logout */}
+      {!isAuthenticated ? (
+        <button
+          className={`${Style.BotonLogin} px-3 py-1 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700`}
+          onClick={() =>
+            loginWithRedirect({
+              redirect_uri: 'https://front-programacion3.vercel.app/callback',
+            })
+          }
+        >
+          Login
+        </button>
+      ) : (
+        <button
+          className={`${Style.BotonLogin} px-3 py-1 bg-red-500 text-white font-semibold rounded hover:bg-red-600`}
+          onClick={() => logout({ returnTo: window.location.origin })}
+        >
+          Logout
+        </button>
+      )}
+    </div>
   );
 }
 

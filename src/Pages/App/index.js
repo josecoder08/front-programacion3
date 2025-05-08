@@ -3,7 +3,6 @@ import { ClientProvider } from '../../Context';
 import Home from '../Home';
 import Crear from '../Crear';
 import Editar from '../Editar';
-import NavBar from '../../Components/NavBar';
 import './App.css';
 
 
@@ -21,7 +20,6 @@ const App = () => {
   return (
     <ClientProvider>
     <BrowserRouter>
-    <NavBar /> 
       <AppRoutes />
     </BrowserRouter>
     </ClientProvider>

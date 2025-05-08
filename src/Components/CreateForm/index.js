@@ -1,198 +1,105 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ClientContext } from '../../Context';
+import { Input } from 'baseui/input';
+import { Button } from 'baseui/button';
+import { FormControl } from 'baseui/form-control';
+import { Grid, Cell } from 'baseui/layout-grid';
+import { Card } from 'baseui/card';
 
 const CreateForm = () => {
-  const { clients, setClients } = useContext(ClientContext);
   const navigate = useNavigate();
-
-  // Form state
   const [formData, setFormData] = useState({
-    firtname: '',
-    lastname: '',
-    email: '',
-    celular: '',
-    documento: '',
-    localidad: '',
-    codigo_postal: '',
-    tipo_cliente: '',
+    nombre: '',
+    apellido: '',
+    dni: '',
+    mail: '',
+    telefono: '',
+    direccion: '',
+    ciudad: '',
+    provincia: '',
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      // First, create the user
-      const userResponse = await fetch('https://programacion3.vercel.app/api/user', {
+      const res = await fetch('http://localhost:3001/api/clienteEstacionamiento', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          firtname: formData.firtname,
-          lastname: formData.lastname,
-          email: formData.email,
-          celular: formData.celular,
-          documento: formData.documento,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
-      if (!userResponse.ok) {
-        throw new Error('Error al crear el usuario');
-      }
+      if (!res.ok) throw new Error('Error al registrar cliente');
 
-      const newUser = await userResponse.json();
-
-      // Then, create the client using the new user's ID
-      const clientResponse = await fetch('https://programacion3.vercel.app/api/client', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          localidad: formData.localidad,
-          codigo_postal: formData.codigo_postal,
-          tipo_cliente: formData.tipo_cliente,
-          user: newUser._id,
-        }),
-      });
-
-      if (!clientResponse.ok) {
-        throw new Error('Error al crear el cliente');
-      }
-
-      const newClient = await clientResponse.json();
-
-      // Combine user and client data
-      const combinedData = {
-        ...newClient,
-        user: newUser,
-      };
-
-      // Update context with the combined data
-      setClients([...clients, combinedData]);
-
-      console.log('Datos enviados:', formData);
       navigate('/');
-    } catch (error) {
-      console.error('Error:', error);
+    } catch (err) {
+      console.error('Error:', err);
+      alert('Ocurrió un error al enviar el formulario.');
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-6 bg-gray-300 shadow-md rounded-md">
-      <h2 className="text-2xl font-bold mb-6">Crear Nuevo Cliente</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Nombre</label>
-          <input
-            type="text"
-            name="firtname"
-            value={formData.firtname}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Apellido</label>
-          <input
-            type="text"
-            name="lastname"
-            value={formData.lastname}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Email</label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Celular</label>
-          <input
-            type="text"
-            name="celular"
-            value={formData.celular}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Documento</label>
-          <input
-            type="text"
-            name="documento"
-            value={formData.documento}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Localidad</label>
-          <input
-            type="text"
-            name="localidad"
-            value={formData.localidad}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Código Postal</label>
-          <input
-            type="text"
-            name="codigo_postal"
-            value={formData.codigo_postal}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-gray-700 font-medium mb-2">Tipo de Cliente</label>
-          <input
-            type="text"
-            name="tipo_cliente"
-            value={formData.tipo_cliente}
-            onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
-            required
-          />
-        </div>
-      </div>
-      <div className="mt-6 flex space-x-4">
-        <button type="submit" className="w-full p-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700">
-          Crear Cliente
-        </button>
-        <button
-          type="button"
-          onClick={() => navigate('/')}
-          className="w-full p-2 bg-gray-600 text-white font-semibold rounded hover:bg-gray-700"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
+    <div style={{ minHeight: '100vh', backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+      <Card
+        overrides={{
+          Root: {
+            style: {
+              width: '100%',
+              maxWidth: '800px',
+              borderRadius: '16px',
+              padding: '2rem',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            },
+          },
+        }}
+      >
+        <h2 style={{ fontSize: '28px', fontWeight: '600', marginBottom: '1rem' }}>Registro de Cliente</h2>
+        <form onSubmit={handleSubmit}>
+          <Grid>
+            {[
+              { label: 'Nombre', name: 'nombre' },
+              { label: 'Apellido', name: 'apellido' },
+              { label: 'DNI', name: 'dni' },
+              { label: 'Correo electrónico', name: 'mail', type: 'email' },
+              { label: 'Teléfono', name: 'telefono' },
+              { label: 'Dirección', name: 'direccion' },
+              { label: 'Ciudad', name: 'ciudad' },
+              { label: 'Provincia', name: 'provincia' },
+            ].map(({ label, name, type = 'text' }) => (
+              <Cell key={name} span={[4, 4, 6]}>
+                <FormControl label={label}>
+                  <Input
+                    type={type}
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleChange}
+                    required
+                  />
+                </FormControl>
+              </Cell>
+            ))}
+          </Grid>
+
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+            <Button type="submit" overrides={{ BaseButton: { style: { flex: 1 } } }}>
+              Registrar
+            </Button>
+            <Button
+              type="button"
+              kind="secondary"
+              onClick={() => navigate('/')}
+              overrides={{ BaseButton: { style: { flex: 1 } } }}
+            >
+              Cancelar
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </div>
   );
 };
 

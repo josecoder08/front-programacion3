@@ -6,18 +6,20 @@ export const ClientProvider = ({ children }) => {
   const [clients, setClients] = useState([]); // Estado global para los clientes
 
   useEffect(() => {
-        fetch('https://programacion3.vercel.app/api/client')
-          .then(response => response.json())
-          .then(data => {
-            console.log(data); // Check what data is returned
-            setClients(data.data); // Set the users from the API response's data array
-          })
-          .catch(error => console.error('Error fetching data:', error));
-      }, []);
-
+    fetch('http://localhost:3001/api/clienteEstacionamiento')
+      .then(response => {
+        if (!response.ok) throw new Error('Error en la respuesta del servidor');
+        return response.json();
+      })
+      .then(data => {
+        console.log('Clientes estacionamiento:', data);
+        setClients(data.data); // ← CORREGIDO
+      })
+      .catch(error => console.error('Error al obtener los clientes de estacionamiento:', error));
+  }, []);
   return (
     <ClientContext.Provider value={{ clients, setClients }}>
-      {children}
+{children}
     </ClientContext.Provider>
   );
 };
