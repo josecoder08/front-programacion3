@@ -26,6 +26,10 @@ const EditForm = () => {
     provincia: '',
   });
 
+  const [mostrarVerificacion, setMostrarVerificacion] = useState(false);
+  const [codigo, setCodigo] = useState('');
+  const [mensaje, setMensaje] = useState('');
+
   useEffect(() => {
     if (cliente) {
       setFormData({
@@ -57,13 +61,36 @@ const EditForm = () => {
 
       if (!res.ok) throw new Error('Error al actualizar los datos del cliente');
 
-      const updatedClient = await res.json();
-      const updatedClients = clients.map(c => (c._id === id ? updatedClient : c));
+      const data = await res.json();
+      const updatedClients = clients.map(c => (c._id === id ? data.cliente : c));
       setClients(updatedClients);
-      navigate('/');
+
+      setMensaje(data.mensaje || 'Revisá tu correo para el código de verificación');
+      setMostrarVerificacion(true);
     } catch (error) {
       console.error('Error:', error);
       alert('Ocurrió un error al actualizar el cliente.');
+    }
+  };
+
+  const handleVerificarCodigo = async () => {
+    try {
+      const res = await fetch(`http://localhost:3001/api/clienteEstacionamiento/${id}/verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert(result.message);
+        navigate('/');
+      } else {
+        alert(result.error || 'Código incorrecto');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error al verificar el código');
     }
   };
 
@@ -86,47 +113,67 @@ const EditForm = () => {
           },
         }}
       >
-        <h2 style={{ fontSize: '26px', fontWeight: '600', marginBottom: '1.5rem' }}>Editar Cliente</h2>
-        <form onSubmit={handleSubmit}>
-          <Grid>
-            {[
-              { label: 'Nombre', name: 'nombre' },
-              { label: 'Apellido', name: 'apellido' },
-              { label: 'DNI', name: 'dni' },
-              { label: 'Correo electrónico', name: 'mail', type: 'email' },
-              { label: 'Teléfono', name: 'telefono' },
-              { label: 'Dirección', name: 'direccion' },
-              { label: 'Ciudad', name: 'ciudad' },
-              { label: 'Provincia', name: 'provincia' },
-            ].map(({ label, name, type = 'text' }) => (
-              <Cell key={name} span={[4, 4, 6]}>
-                <FormControl label={label}>
-                  <Input
-                    type={type}
-                    name={name}
-                    value={formData[name]}
-                    onChange={handleChange}
-                    required
-                  />
-                </FormControl>
-              </Cell>
-            ))}
-          </Grid>
+        <h2 style={{ fontSize: '26px', fontWeight: '600', marginBottom: '1.5rem' }}>
+          {mostrarVerificacion ? 'Verificación' : 'Editar Cliente'}
+        </h2>
 
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-            <Button type="submit" overrides={{ BaseButton: { style: { flex: 1 } } }}>
-              Guardar Cambios
-            </Button>
-            <Button
-              type="button"
-              kind="secondary"
-              onClick={() => navigate('/')}
-              overrides={{ BaseButton: { style: { flex: 1 } } }}
-            >
-              Cancelar
-            </Button>
+        {!mostrarVerificacion ? (
+          <form onSubmit={handleSubmit}>
+            <Grid>
+              {[
+                { label: 'Nombre', name: 'nombre' },
+                { label: 'Apellido', name: 'apellido' },
+                { label: 'DNI', name: 'dni' },
+                { label: 'Correo electrónico', name: 'mail', type: 'email' },
+                { label: 'Teléfono', name: 'telefono' },
+                { label: 'Dirección', name: 'direccion' },
+                { label: 'Ciudad', name: 'ciudad' },
+                { label: 'Provincia', name: 'provincia' },
+              ].map(({ label, name, type = 'text' }) => (
+                <Cell key={name} span={[4, 4, 6]}>
+                  <FormControl label={label}>
+                    <Input
+                      type={type}
+                      name={name}
+                      value={formData[name]}
+                      onChange={handleChange}
+                      required
+                    />
+                  </FormControl>
+                </Cell>
+              ))}
+            </Grid>
+
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+              <Button type="submit" overrides={{ BaseButton: { style: { flex: 1 } } }}>
+                Guardar Cambios
+              </Button>
+              <Button
+                type="button"
+                kind="secondary"
+                onClick={() => navigate('/')}
+                overrides={{ BaseButton: { style: { flex: 1 } } }}
+              >
+                Cancelar
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <div>
+            <p style={{ marginBottom: '1rem' }}>{mensaje}</p>
+            <FormControl label="Código de verificación (6 dígitos)">
+              <Input
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
+                maxLength={6}
+                pattern="\d{6}"
+                placeholder="123456"
+                required
+              />
+            </FormControl>
+            <Button onClick={handleVerificarCodigo}>Verificar</Button>
           </div>
-        </form>
+        )}
       </Card>
     </div>
   );
